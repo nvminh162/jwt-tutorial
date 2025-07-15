@@ -1,0 +1,129 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Session {
+  id        String   @id
+  sid       String   @unique
+  data      String   @db.MediumText
+  expiresAt DateTime
+}
+
+model User {
+  id          Int     @id @default(autoincrement())
+  username    String  @unique @db.VarChar(255)
+  password    String  @db.VarChar(255)
+  fullName    String? @db.VarChar(255)
+  address     String? @db.VarChar(255)
+  phone       String? @db.VarChar(255)
+  accountType String  @db.VarChar(50)
+  avatar      String? @db.VarChar(255)
+
+  role   Role @relation(fields: [roleId], references: [id])
+  roleId Int
+
+  cart Cart?
+
+  orders Order[]
+
+  @@map("users")
+}
+
+model Role {
+  id          Int    @id @default(autoincrement())
+  name        String @unique @db.VarChar(100)
+  description String @db.VarChar(255)
+
+  users User[]
+
+  @@map("roles")
+}
+
+model Product {
+  id         Int     @id @default(autoincrement())
+  name       String  @db.VarChar(255)
+  price      Int
+  detailDesc String  @db.MediumText
+  shortDesc  String  @db.VarChar(255)
+  quantity   Int
+  sold       Int?    @default(0)
+  factory    String  @db.VarChar(255)
+  target     String  @db.VarChar(255)
+  image      String? @db.VarChar(255)
+
+  cartDetails  CartDetail[]
+  orderDetails OrderDetail[]
+
+  @@map("products")
+}
+
+model Cart {
+  id  Int @id @default(autoincrement())
+  sum Int
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int  @unique
+
+  cartDetails CartDetail[]
+
+  @@map("carts")
+}
+
+model CartDetail {
+  id       Int @id @default(autoincrement())
+  price    Int
+  quantity Int
+
+  cart   Cart @relation(fields: [cartId], references: [id])
+  cartId Int
+
+  product   Product @relation(fields: [productId], references: [id])
+  productId Int
+
+  @@map("cart_detail")
+}
+
+model Order {
+  id              Int    @id @default(autoincrement())
+  totalPrice      Int
+  receiverAddress String @db.VarChar(255)
+  receiverName    String @db.VarChar(255)
+  receiverPhone   String @db.VarChar(255)
+  status          String @default("PENDING") //PENDING, CANCELED, COMPLETE
+
+  paymentMethod String //COD, BANKING...
+  paymentStatus String //PAYMENT_UNPAID, PAYMENT_SUCCED, PAYMENT_FAILED
+  paymentRef    String?
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+
+  orderDetails OrderDetail[]
+
+  @@map("orders")
+}
+
+model OrderDetail {
+  id       Int @id @default(autoincrement())
+  price    Int
+  quantity Int
+
+  order   Order @relation(fields: [orderId], references: [id])
+  orderId Int
+
+  product   Product @relation(fields: [productId], references: [id])
+  productId Int
+
+  @@map("order_detail")
+}
