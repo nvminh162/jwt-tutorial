@@ -8,7 +8,13 @@ const PORT = process.env.PORT || 8080;
 const app = express();
 
 //config cors
-app.use(cors());
+app.use(cors({
+  origin: ["http://localhost:5173"]
+}));
+
+//middleware to parse JSON bodies
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 //api routes
 apiRoutes(app);

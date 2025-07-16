@@ -3,7 +3,6 @@ import { ACCOUNT_TYPE } from "config/constants";
 import { comparePassword, hashPassword } from "./user.service";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
-import { name } from "ejs";
 
 export const isEmailExist = async (email: string) => {
   const user = await prisma.user.findUnique({
