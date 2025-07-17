@@ -8,26 +8,57 @@ import { useAppContext } from "../../context/app.provider";
 type MenuItem = Required<MenuProps>["items"][number];
 
 const AppHeader = () => {
-  const { userInfo } = useAppContext();
+  const { userInfo, setUserInfo } = useAppContext();
 
-  const items: MenuItem[] = [
-    {
-      label: <Link to={"/"}>Trang chủ</Link>,
-      key: "home",
-      icon: <HomeOutlined />,
-    },
-    {
-      label: <Link to={"/users"}>Users</Link>,
-      key: "user",
-      icon: <UserOutlined />,
-    },
-    {
-      label: `Welcome ${userInfo.username}`,
-      key: "SubMenu",
-      icon: <SettingOutlined />,
-      children: [{ label: "Logout", key: "logout" }],
-    },
-  ];
+  let items: MenuItem[] = [];
+
+  if (userInfo.isAuthenticated) {
+    items = [
+      {
+        label: <Link to={"/"}>Trang chủ</Link>,
+        key: "home",
+        icon: <HomeOutlined />,
+      },
+      {
+        label: <Link to={"/users"}>Users</Link>,
+        key: "user",
+        icon: <UserOutlined />,
+      },
+      {
+        label: `Welcome ${userInfo.username}`,
+        key: "SubMenu",
+        icon: <SettingOutlined />,
+        children: [
+          {
+            label: <span>Logout</span>,
+            key: "logout",
+            onClick: () => {
+              localStorage.removeItem("access_token");
+              setUserInfo({
+                id: 0,
+                username: "",
+                isAuthenticated: false,
+                isLoading: true,
+              });
+            },
+          },
+        ],
+      },
+    ];
+  } else {
+    items = [
+      {
+        label: <Link to={"/"}>Trang chủ</Link>,
+        key: "home",
+        icon: <HomeOutlined />,
+      },
+      {
+        label: <Link to={"/login"}>Login</Link>,
+        key: "login",
+        icon: <UserOutlined />,
+      },
+    ];
+  }
 
   const [current, setCurrent] = useState("home");
 

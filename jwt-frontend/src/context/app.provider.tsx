@@ -6,11 +6,13 @@ interface IAppData {
   setUsername: (v: string) => void;
   userInfo: {
     isAuthenticated: boolean;
+    isLoading: boolean;
     id: number;
     username: string;
   };
   setUserInfo: (v: any) => void;
 }
+
 // The context is created with `null` in the type, to accurately reflect the default value.
 const AppContext = createContext<IAppData | null>(null);
 
@@ -31,15 +33,18 @@ const AppProvider = (props: IProps) => {
   const [username, setUsername] = useState<string>("");
   const [userInfo, setUserInfo] = useState<{
     isAuthenticated: boolean;
+    isLoading: boolean;
     id: number;
     username: string;
   }>({
     isAuthenticated: false,
+    isLoading: false,
     id: 0,
     username: "",
   });
 
   const { children } = props;
+
   return (
     <AppContext value={{ username, setUsername, userInfo, setUserInfo }}>
       {children}

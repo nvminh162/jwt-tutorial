@@ -11,7 +11,6 @@ type FieldType = {
 
 const LoginPage = () => {
   const { setUsername } = useAppContext();
-
   const navigate = useNavigate();
 
   const { notification } = App.useApp();
